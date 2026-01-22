@@ -1,0 +1,21 @@
+{
+  "version": "1.0.0",
+  "name": "movieflix",
+  "private": true,
+  "description": "Full-stack movie streaming platform",
+  "scripts": {
+    "install-all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "start-backend": "cd backend && npm start",
+    "start-frontend": "cd frontend && npm start",
+    "dev-backend": "cd backend && npm run dev",
+    "seed": "cd backend && node seed.js"
+  },
+  "keywords": [
+    "movies",
+    "streaming",
+    "platform",
+    "react",
+    "express",
+    "mongodb"
+  ]
+}

@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamMix | Next-Gen Entertainment</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-red: #e50914;
+            --bg-black: #0f0f0f;
+            --sidebar-bg: #121212;
+            --card-bg: #1e1e1e;
+            --text-white: #ffffff;
+            --text-gray: #aaaaaa;
+            --accent-blue: #3ea6ff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-black);
+            color: var(--text-white);
+            display: flex;
+            overflow-x: hidden;
+        }
+
+        /* --- SIDEBAR --- */
+        nav.sidebar {
+            width: 240px;
+            background-color: var(--sidebar-bg);
+            height: 100vh;
+            position: fixed;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #222;
+            z-index: 2000;
+            padding-top: 20px;
+        }
+
+        .logo {
+            padding: 20px 30px;
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--primary-red);
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 25px;
+            color: var(--text-gray);
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            transition: 0.2s;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: white;
+            background: #252525;
+            border-left-color: var(--primary-red);
+        }
+
+        .nav-item span:first-child {
+            margin-right: 15px;
+            font-size: 1.2rem;
+        }
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            margin-left: 240px;
+            width: calc(100% - 240px);
+            min-height: 100vh;
+        }
+
+        /* --- X-RAY PANEL --- */
+        .xray-panel {
+            position: fixed;
+            right: -400px;
+            top: 0;
+            width: 350px;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(20px);
+            z-index: 3000;
+            transition: 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+            padding: 40px 20px;
+            border-left: 1px solid #333;
+            overflow-y: auto;
+        }
+
+        .xray-panel.open {
+            right: 0;
+        }
+
+        .xray-panel h3 {
+            font-size: 1.1rem;
+            margin-top: 20px;
+            margin-bottom: 15px;
+        }
+
+        .xray-panel button {
+            background: none;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .xray-cast-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .xray-cast-item img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .xray-cast-item strong {
+            display: block;
+        }
+
+        .xray-cast-item small {
+            color: var(--text-gray);
+            font-size: 0.85rem;
+        }
+
+        .xray-trivia {
+            font-size: 0.85rem;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: 5px;
+            color: var(--text-gray);
+            line-height: 1.4;
+        }
+
+        /* --- MINI PLAYER --- */
+        .mini-player {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 300px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 4000;
+            overflow: hidden;
+        }
+
+        .mini-player.open {
+            display: block;
+        }
+
+        .mini-player video {
+            width: 100%;
+            aspect-ratio: 16/9;
+        }
+
+        .mini-player-info {
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-black);
+            font-size: 0.85rem;
+        }
+
+        .mini-player-info button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* --- HERO SECTION --- */
+        .hero-billboard {
+            background-size: cover;
+            background-position: center;
+            height: 60vh;
+            display: flex;
+            align-items: flex-end;
+            position: relative;
+        }
+
+        .hero-billboard::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to right, rgba(15, 15, 15, 0.9), transparent);
+            z-index: 1;
+        }
+
+        .hero-info {
+            position: relative;
+            z-index: 2;
+            padding: 60px;
+            max-width: 600px;
+        }
+
+        .hero-info h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+
+        .hero-info p {
+            font-size: 1rem;
+            color: #ddd;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .hero-btn {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .hero-btn-primary {
+            background: white;
+            color: black;
+        }
+
+        .hero-btn-primary:hover {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .hero-btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .hero-btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* --- CONTENT ROWS --- */
+        .row-container {
+            padding: 40px;
+        }
+
+        .row-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .card-stack {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            scrollbar-width: thin;
+            padding: 10px 0;
+        }
+
+        .item-card {
+            min-width: 280px;
+            position: relative;
+            cursor: pointer;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: 0.4s;
+            flex-shrink: 0;
+        }
+
+        .item-card:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px var(--primary-red);
+        }
+
+        .item-card img {
+            width: 100%;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+        }
+
+        .overlay-btns {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            display: flex;
+            gap: 5px;
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        .item-card:hover .overlay-btns {
+            opacity: 1;
+        }
+
+        .circle-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: white;
+            color: black;
+            border: none;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .circle-btn:hover {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 1024px) {
+            nav.sidebar { width: 80px; }
+            .main-content { margin-left: 80px; width: calc(100% - 80px); }
+            .nav-item span:last-child { display: none; }
+        }
+
+        @media (max-width: 768px) {
+            nav.sidebar { width: 60px; }
+            .main-content { margin-left: 60px; width: calc(100% - 60px); }
+            .hero-info { padding: 30px; }
+            .hero-info h1 { font-size: 2rem; }
+        }
+
+        @media (max-width: 480px) {
+            nav.sidebar { width: 50px; }
+            .main-content { margin-left: 50px; }
+            .hero-billboard { height: 40vh; }
+            .hero-info { padding: 20px; }
+            .hero-info h1 { font-size: 1.3rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- X-RAY PANEL -->
+    <aside class="xray-panel" id="xRayPanel">
+        <button onclick="toggleXray()">✕ CLOSE X-RAY</button>
+        <h3>In This Scene</h3>
+        <p style="color: var(--text-gray); font-size: 0.9rem;">Actors appearing now:</p>
+        <div class="xray-cast-item">
+            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80">
+            <div>
+                <strong>Christian Bale</strong><br>
+                <small>as Bruce Wayne</small>
+            </div>
+        </div>
+        <div class="xray-cast-item">
+            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=100&q=80">
+            <div>
+                <strong>Heath Ledger</strong><br>
+                <small>as The Joker</small>
+            </div>
+        </div>
+        <h3>Trivia</h3>
+        <p class="xray-trivia">The hospital explosion scene was delayed because of a technical glitch, leading to the famous improvised reaction.</p>
+    </aside>
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar">
+        <div class="logo">StreamMix</div>
+        <div class="nav-item active" onclick="showSection('home')">🏠 <span>Home</span></div>
+        <div class="nav-item" onclick="showSection('movies')">🎬 <span>Movies</span></div>
+        <div class="nav-item">📺 <span>TV Shows</span></div>
+        <div class="nav-item">🔴 <span>Live</span></div>
+        <hr style="width: 80%; border: 0.5px solid #333; margin: 20px auto;">
+        <div class="nav-item" onclick="toggleXray()">🕵️ <span>X-Ray Mode</span></div>
+        <div class="nav-item">⚙️ <span>Settings</span></div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <!-- HERO -->
+        <div class="hero-billboard" style="background-image: linear-gradient(to right, black, transparent), url('https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1600&q=80');">
+            <div class="hero-info">
+                <h1>Interstellar</h1>
+                <p>A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival.</p>
+                <div class="hero-buttons">
+                    <button class="hero-btn hero-btn-primary" onclick="launchMiniPlayer()">▶ Watch Now</button>
+                    <button class="hero-btn hero-btn-secondary">+ My List</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TRENDING -->
+        <div class="row-container">
+            <h2 class="row-title">Trending on StreamMix</h2>
+            <div class="card-stack">
+                <div class="item-card">
+                    <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=400&q=80">
+                    <div class="overlay-btns">
+                        <button class="circle-btn" onclick="launchMiniPlayer()">▶</button>
+                        <button class="circle-btn">+</button>
+                    </div>
+                </div>
+                <div class="item-card">
+                    <img src="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?auto=format&fit=crop&w=400&q=80">
+                    <div class="overlay-btns">
+                        <button class="circle-btn" onclick="launchMiniPlayer()">▶</button>
+                        <button class="circle-btn">+</button>
+                    </div>
+                </div>
+                <div class="item-card">
+                    <img src="https://images.unsplash.com/photo-1594909122845-11baa439b7bf?auto=format&fit=crop&w=400&q=80">
+                    <div class="overlay-btns">
+                        <button class="circle-btn" onclick="launchMiniPlayer()">▶</button>
+                        <button class="circle-btn">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- POPULAR -->
+        <div class="row-container">
+            <h2 class="row-title">Popular on StreamMix</h2>
+            <div class="card-stack">
+                <div class="item-card">
+                    <img src="https://images.unsplash.com/photo-1522869635100-ce306e28340a?auto=format&fit=crop&w=400&q=80">
+                    <div class="overlay-btns">
+                        <button class="circle-btn" onclick="launchMiniPlayer()">▶</button>
+                        <button class="circle-btn">+</button>
+                    </div>
+                </div>
+                <div class="item-card">
+                    <img src="https://images.unsplash.com/photo-1534224617256-7a379cff736d?auto=format&fit=crop&w=400&q=80">
+                    <div class="overlay-btns">
+                        <button class="circle-btn" onclick="launchMiniPlayer()">▶</button>
+                        <button class="circle-btn">+</button>
+                    </div>
+                </div>
+                <div class="item-card">
+                    <img src="https://images.unsplash.com/photo-1485070542332-79e08ca41dbe?auto=format&fit=crop&w=400&q=80">
+                    <div class="overlay-btns">
+                        <button class="circle-btn" onclick="launchMiniPlayer()">▶</button>
+                        <button class="circle-btn">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MINI PLAYER -->
+    <div class="mini-player" id="player">
+        <video id="v" controls>
+            <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+        </video>
+        <div class="mini-player-info">
+            <span><strong>Playing:</strong> Big Buck Bunny</span>
+            <button onclick="closePlayer()">✕</button>
+        </div>
+    </div>
+
+    <script>
+        function toggleXray() {
+            document.getElementById('xRayPanel').classList.toggle('open');
+        }
+        function launchMiniPlayer() {
+            document.getElementById('player').classList.add('open');
+            document.getElementById('v').play();
+        }
+        function closePlayer() {
+            document.getElementById('player').classList.remove('open');
+            document.getElementById('v').pause();
+        }
+        function showSection(name) {
+            console.log("Switching to: " + name);
+        }
+    </script>
+</body>
+</html>
